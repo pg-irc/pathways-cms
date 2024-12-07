@@ -13,6 +13,7 @@ export interface Config {
   collections: {
     users: User;
     topic: Topic;
+    region: Region;
     media: Media;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -22,6 +23,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     topic: TopicSelect<false> | TopicSelect<true>;
+    region: RegionSelect<false> | RegionSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -110,6 +112,16 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "region".
+ */
+export interface Region {
+  id: string;
+  name: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -122,6 +134,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'topic';
         value: string | Topic;
+      } | null)
+    | ({
+        relationTo: 'region';
+        value: string | Region;
       } | null)
     | ({
         relationTo: 'media';
@@ -193,6 +209,16 @@ export interface TopicSelect<T extends boolean = true> {
   content?: T;
   heroimage?: T;
   listImage?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "region_select".
+ */
+export interface RegionSelect<T extends boolean = true> {
+  id?: T;
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
 }
