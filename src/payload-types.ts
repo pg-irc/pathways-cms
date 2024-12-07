@@ -139,6 +139,7 @@ export interface Media {
  */
 export interface Chapter {
   id: string;
+  name: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -148,6 +149,7 @@ export interface Chapter {
  */
 export interface Topictype {
   id: string;
+  name: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -289,7 +291,7 @@ export interface TopicSelect<T extends boolean = true> {
  * via the `definition` "chapter_select".
  */
 export interface ChapterSelect<T extends boolean = true> {
-  id?: T;
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -308,7 +310,7 @@ export interface RegionSelect<T extends boolean = true> {
  * via the `definition` "topictype_select".
  */
 export interface TopictypeSelect<T extends boolean = true> {
-  id?: T;
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -4,7 +4,7 @@ export const Topics: CollectionConfig = {
     slug: 'topic',
     admin: {
         useAsTitle: 'name',
-        defaultColumns: ['name', 'regions', 'chapters', 'topictype'],
+        defaultColumns: ['name', 'topictype', 'regions', 'chapters'],
     },
     access: {
         read: () => true,
@@ -40,7 +40,6 @@ export const Topics: CollectionConfig = {
             relationTo: 'chapter',
             required: false,
             hasMany: true,
-            label: 'Which chapters does this topic belong to?',
         },
         {
             name: 'topictype',
@@ -48,7 +47,6 @@ export const Topics: CollectionConfig = {
             relationTo: 'topictype',
             required: true,
             hasMany: false,
-            label: 'What type of topic is this?',   
         },
         {
             name: 'regions',
@@ -56,7 +54,6 @@ export const Topics: CollectionConfig = {
             relationTo: 'region',
             required: false,
             hasMany: true,
-            label: 'The topic is relevant to which regions?',
         }
     ],
 };

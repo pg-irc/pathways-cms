@@ -13,7 +13,7 @@ export const Regions: CollectionConfig = {
         {
             name: 'id',
             type: 'text',
-            label: 'Abbreviation',
+            label: 'Two letter abbreviation',
             required: true,
             unique: true,
         },
@@ -21,6 +21,7 @@ export const Regions: CollectionConfig = {
             name: 'name',
             type: 'text',
             required: true,
+            unique: true,
         },
     ],
 };

@@ -3,14 +3,14 @@ import type { CollectionConfig } from 'payload';
 export const Chapters: CollectionConfig = {
     slug: 'chapter',
     admin: {
-        useAsTitle: 'id',
+        useAsTitle: 'name',
     },
     access: {
         read: () => true,
     },
     fields: [
         {
-            name: 'id',
+            name: 'name',
             type: 'text',
             required: true,
             unique: true,

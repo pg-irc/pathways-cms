@@ -3,14 +3,14 @@ import type { CollectionConfig } from 'payload';
 export const TopicTypes: CollectionConfig = {
     slug: 'topictype',
     admin: {
-        useAsTitle: 'id',
+        useAsTitle: 'name',
     },
     access: {
         read: () => true,
     },
     fields: [
         {
-            name: 'id',
+            name: 'name',
             type: 'text',
             required: true,
             unique: true,
