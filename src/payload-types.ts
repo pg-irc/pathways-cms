@@ -17,6 +17,7 @@ export interface Config {
     region: Region;
     topictype: Topictype;
     media: Media;
+    softskillsquestion: Softskillsquestion;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -29,6 +30,7 @@ export interface Config {
     region: RegionSelect<false> | RegionSelect<true>;
     topictype: TopictypeSelect<false> | TopictypeSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    softskillsquestion: SoftskillsquestionSelect<false> | SoftskillsquestionSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -147,6 +149,22 @@ export interface Region {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "softskillsquestion".
+ */
+export interface Softskillsquestion {
+  id: string;
+  text: string;
+  answers: {
+    text: string;
+    isCorrect: boolean;
+    reason: string;
+    id?: string | null;
+  }[];
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
@@ -175,6 +193,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: string | Media;
+      } | null)
+    | ({
+        relationTo: 'softskillsquestion';
+        value: string | Softskillsquestion;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -293,6 +315,23 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "softskillsquestion_select".
+ */
+export interface SoftskillsquestionSelect<T extends boolean = true> {
+  text?: T;
+  answers?:
+    | T
+    | {
+        text?: T;
+        isCorrect?: T;
+        reason?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

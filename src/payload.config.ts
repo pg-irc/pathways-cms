@@ -13,6 +13,7 @@ import { Topics } from './collections/Topics'
 import { TopicTypes } from './collections/TopicTypes'
 import { Regions } from './collections/Regions'
 import { Chapters } from './collections/Chapters'
+import { SoftSkillsQuestions } from './collections/SoftSkillsQuestions'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -24,7 +25,7 @@ export default buildConfig({
             baseDir: path.resolve(dirname),
         },
     },
-    collections: [Users, Topics, Chapters, Regions, TopicTypes, Media],
+    collections: [Users, Topics, Chapters, Regions, TopicTypes, Media, SoftSkillsQuestions],
     localization: {
         locales: [
             'en', 'ar', 'fa', 'fr', 'ko', 'pa', 'tg', 'zh', 'uk'
