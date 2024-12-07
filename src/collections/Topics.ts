@@ -18,7 +18,7 @@ export const Topics: CollectionConfig = {
         },
         {
             name: 'content',
-            type: 'textarea',
+            type: 'richText',
             required: true,
             localized: true,
         },
