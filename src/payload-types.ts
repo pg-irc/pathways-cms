@@ -14,6 +14,7 @@ export interface Config {
     users: User;
     topic: Topic;
     region: Region;
+    topictype: Topictype;
     media: Media;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -24,6 +25,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     topic: TopicSelect<false> | TopicSelect<true>;
     region: RegionSelect<false> | RegionSelect<true>;
+    topictype: TopictypeSelect<false> | TopictypeSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -88,6 +90,7 @@ export interface Topic {
   content: string;
   heroimage?: (string | null) | Media;
   listImage?: (string | null) | Media;
+  topictype: string | Topictype;
   regions?: (string | Region)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -110,6 +113,15 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topictype".
+ */
+export interface Topictype {
+  id: string;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -139,6 +151,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'region';
         value: string | Region;
+      } | null)
+    | ({
+        relationTo: 'topictype';
+        value: string | Topictype;
       } | null)
     | ({
         relationTo: 'media';
@@ -210,6 +226,7 @@ export interface TopicSelect<T extends boolean = true> {
   content?: T;
   heroimage?: T;
   listImage?: T;
+  topictype?: T;
   regions?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -221,6 +238,15 @@ export interface TopicSelect<T extends boolean = true> {
 export interface RegionSelect<T extends boolean = true> {
   id?: T;
   name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "topictype_select".
+ */
+export interface TopictypeSelect<T extends boolean = true> {
+  id?: T;
   updatedAt?: T;
   createdAt?: T;
 }

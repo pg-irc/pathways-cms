@@ -10,6 +10,7 @@ import sharp from 'sharp'
 import { Users } from './collections/Users'
 import { Media } from './collections/Media'
 import { Topics } from './collections/Topics'
+import { TopicTypes } from './collections/TopicTypes'
 import { Regions } from './collections/Regions'
 
 const filename = fileURLToPath(import.meta.url)
@@ -22,7 +23,7 @@ export default buildConfig({
             baseDir: path.resolve(dirname),
         },
     },
-    collections: [Users, Topics, Regions, Media],
+    collections: [Users, Topics, Regions, TopicTypes, Media],
     editor: lexicalEditor(),
     secret: process.env.PAYLOAD_SECRET || '',
     typescript: {

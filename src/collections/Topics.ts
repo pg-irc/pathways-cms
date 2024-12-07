@@ -29,6 +29,14 @@ export const Topics: CollectionConfig = {
             required: false,
         },
         {
+            name: 'topictype',
+            type: 'relationship',
+            relationTo: 'topictype',
+            required: true,
+            hasMany: false,
+            label: 'What type of topic is this?',   
+        },
+        {
             name: 'regions',
             type: 'relationship',
             relationTo: 'region',
