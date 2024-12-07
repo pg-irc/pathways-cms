@@ -2,6 +2,10 @@ import type { CollectionConfig } from 'payload';
 
 export const Topics: CollectionConfig = {
     slug: 'topic',
+    admin: {
+        useAsTitle: 'name',
+        defaultColumns: ['name', 'regions', 'chapters', 'topictype'],
+    },
     access: {
         read: () => true,
     },
@@ -10,11 +14,13 @@ export const Topics: CollectionConfig = {
             name: 'name',
             type: 'text',
             required: true,
+            localized: true,
         },
         {
             name: 'content',
             type: 'textarea',
             required: true,
+            localized: true,
         },
         {
             name: 'heroimage',

@@ -25,6 +25,13 @@ export default buildConfig({
         },
     },
     collections: [Users, Topics, Chapters, Regions, TopicTypes, Media],
+    localization: {
+        locales: [
+            'en', 'ar', 'fa', 'fr', 'ko', 'pa', 'tg', 'zh', 'uk'
+        ],
+        defaultLocale: 'en',
+        fallback: true,
+    },
     editor: lexicalEditor(),
     secret: process.env.PAYLOAD_SECRET || '',
     typescript: {

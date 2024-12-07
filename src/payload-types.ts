@@ -38,7 +38,7 @@ export interface Config {
   };
   globals: {};
   globalsSelect: {};
-  locale: null;
+  locale: 'en' | 'ar' | 'fa' | 'fr' | 'ko' | 'pa' | 'tg' | 'zh' | 'uk';
   user: User & {
     collection: 'users';
   };
