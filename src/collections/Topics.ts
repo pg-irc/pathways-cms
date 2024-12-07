@@ -27,6 +27,14 @@ export const Topics: CollectionConfig = {
             type: 'upload',
             relationTo: 'media',
             required: false,
+        },
+        {
+            name: 'regions',
+            type: 'relationship',
+            relationTo: 'region',
+            required: false,
+            hasMany: true,
+            label: 'The topic is relevant to which regions?',
         }
     ],
 };

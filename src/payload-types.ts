@@ -88,6 +88,7 @@ export interface Topic {
   content: string;
   heroimage?: (string | null) | Media;
   listImage?: (string | null) | Media;
+  regions?: (string | Region)[] | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -209,6 +210,7 @@ export interface TopicSelect<T extends boolean = true> {
   content?: T;
   heroimage?: T;
   listImage?: T;
+  regions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
