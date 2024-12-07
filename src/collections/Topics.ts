@@ -29,6 +29,14 @@ export const Topics: CollectionConfig = {
             required: false,
         },
         {
+            name: 'chapters',
+            type: 'relationship',
+            relationTo: 'chapter',
+            required: false,
+            hasMany: true,
+            label: 'Which chapters does this topic belong to?',
+        },
+        {
             name: 'topictype',
             type: 'relationship',
             relationTo: 'topictype',

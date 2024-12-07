@@ -13,6 +13,7 @@ export interface Config {
   collections: {
     users: User;
     topic: Topic;
+    chapter: Chapter;
     region: Region;
     topictype: Topictype;
     media: Media;
@@ -24,6 +25,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     topic: TopicSelect<false> | TopicSelect<true>;
+    chapter: ChapterSelect<false> | ChapterSelect<true>;
     region: RegionSelect<false> | RegionSelect<true>;
     topictype: TopictypeSelect<false> | TopictypeSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
@@ -90,6 +92,7 @@ export interface Topic {
   content: string;
   heroimage?: (string | null) | Media;
   listImage?: (string | null) | Media;
+  chapters?: (string | Chapter)[] | null;
   topictype: string | Topictype;
   regions?: (string | Region)[] | null;
   updatedAt: string;
@@ -113,6 +116,15 @@ export interface Media {
   height?: number | null;
   focalX?: number | null;
   focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chapter".
+ */
+export interface Chapter {
+  id: string;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -147,6 +159,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'topic';
         value: string | Topic;
+      } | null)
+    | ({
+        relationTo: 'chapter';
+        value: string | Chapter;
       } | null)
     | ({
         relationTo: 'region';
@@ -226,8 +242,18 @@ export interface TopicSelect<T extends boolean = true> {
   content?: T;
   heroimage?: T;
   listImage?: T;
+  chapters?: T;
   topictype?: T;
   regions?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "chapter_select".
+ */
+export interface ChapterSelect<T extends boolean = true> {
+  id?: T;
   updatedAt?: T;
   createdAt?: T;
 }
