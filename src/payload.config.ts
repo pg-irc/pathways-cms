@@ -28,10 +28,18 @@ export default buildConfig({
     collections: [Users, Topics, Chapters, Regions, TopicTypes, Media, SoftSkillsQuestions],
     localization: {
         locales: [
-            'en', 'ar', 'fa', 'fr', 'ko', 'pa', 'tg', 'zh', 'uk'
+            { label: 'English', code: 'en' },
+            { label: 'Arabic', code: 'ar', rtl: true },
+            { label: 'Farsi', code: 'fa', rtl: true },
+            { label: 'French', code: 'fr' },
+            { label: 'Korean', code: 'ko' },
+            { label: 'Punjabi', code: 'pa' },
+            { label: 'Tagalog', code: 'tl' },
+            { label: 'Chinese (Simplified)', code: 'zh_CN' },
+            { label: 'Chinese (Traditional)', code: 'zh_TW' },
+            { label: 'Ukrainian', code: 'uk' }
         ],
         defaultLocale: 'en',
-        fallback: true,
     },
     editor: lexicalEditor(),
     secret: process.env.PAYLOAD_SECRET || '',

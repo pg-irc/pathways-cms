@@ -40,7 +40,7 @@ export interface Config {
   };
   globals: {};
   globalsSelect: {};
-  locale: 'en' | 'ar' | 'fa' | 'fr' | 'ko' | 'pa' | 'tg' | 'zh' | 'uk';
+  locale: 'en' | 'ar' | 'fa' | 'fr' | 'ko' | 'pa' | 'tl' | 'zh_CN' | 'zh_TW' | 'uk';
   user: User & {
     collection: 'users';
   };
