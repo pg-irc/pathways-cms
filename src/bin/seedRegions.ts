@@ -6,7 +6,7 @@ import 'dotenv/config'
 
 const payload = await getPayload({ config })
 
-const data = [
+const regions = [
     { "name": "Alabama", "id": "AL" },
     { "name": "Alaska", "id": "AK" },
     { "name": "Arizona", "id": "AZ" },
@@ -73,13 +73,12 @@ const data = [
     { "name": "Yukon", "id": "YT" }
 ];
 
-let promises = [];
-for (const region of data) {
-    promises.push(payload.create({
+await Promise.all(regions.map((region) => {
+    payload.create({
         collection: 'region',
         data: region,
         locale: 'en'
-    }));
-}
+    });
+}));
 
-await Promise.all(promises);
+console.log('Regions seeded successfully');
