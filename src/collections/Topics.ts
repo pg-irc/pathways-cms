@@ -4,6 +4,9 @@ export const Topics: CollectionConfig = {
     slug: 'topic',
     admin: {
         useAsTitle: 'name',
+        livePreview: {
+            url: 'https://localhost:3000/'
+        },
         defaultColumns: ['name', 'topictype', 'regions', 'chapters'],
     },
     access: {

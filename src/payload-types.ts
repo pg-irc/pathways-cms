@@ -172,7 +172,7 @@ export interface Softskillsquestion {
   text: string;
   answers: {
     text: string;
-    isCorrect: boolean;
+    isCorrect?: boolean | null;
     reason: string;
     id?: string | null;
   }[];

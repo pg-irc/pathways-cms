@@ -25,7 +25,7 @@ export const SoftSkillsQuestions: CollectionConfig = {
                 {
                     type: 'checkbox',
                     name: 'isCorrect',
-                    required: true,
+                    required: false,
                     defaultValue: false,
                 },
                 {
