@@ -90,7 +90,8 @@ export interface User {
  */
 export interface Topic {
   id: string;
-  name: string;
+  canonicalName: string;
+  localizedName: string;
   content: {
     root: {
       type: string;
@@ -276,7 +277,8 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "topic_select".
  */
 export interface TopicSelect<T extends boolean = true> {
-  name?: T;
+  canonicalName?: T;
+  localizedName?: T;
   content?: T;
   heroimage?: T;
   listImage?: T;

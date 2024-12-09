@@ -3,18 +3,28 @@ import type { CollectionConfig } from 'payload';
 export const Topics: CollectionConfig = {
     slug: 'topic',
     admin: {
-        useAsTitle: 'name',
-        livePreview: {
-            url: 'https://localhost:3000/'
-        },
-        defaultColumns: ['name', 'topictype', 'regions', 'chapters'],
+        // use a non-localized field as the canonical name, 
+        // so that the name field can be localized and the canonical 
+        // name can be used as a unique identifier
+        useAsTitle: 'canonicalName',
+        defaultColumns: ['canonicalName', 'topictype', 'regions', 'chapters'],
     },
     access: {
         read: () => true,
+        create: () => true,
+        update: () => true,
+        delete: () => true,
     },
     fields: [
         {
-            name: 'name',
+            name: 'canonicalName',
+            type: 'text',
+            required: true,
+            unique: true,
+            localized: false,
+        },
+        {
+            name: 'localizedName',
             type: 'text',
             required: true,
             localized: true,
