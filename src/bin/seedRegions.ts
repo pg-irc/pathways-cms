@@ -1,3 +1,5 @@
+// to execute: npx tsx ./src/bin/seedRegions.ts
+
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import 'dotenv/config'
@@ -71,15 +73,13 @@ const data = [
     { "name": "Yukon", "id": "YT" }
 ];
 
-const region = await payload.create({
-    collection: 'region',
-    data: {
-        id: 'NC',
-        name: 'North Carolina',
-    },
-    locale: 'en',
-    // user: 'rasmus@peacegeeks.org',
-    overrideAccess: true,
-});
+let promises = [];
+for (const region of data) {
+    promises.push(payload.create({
+        collection: 'region',
+        data: region,
+        locale: 'en'
+    }));
+}
 
-console.log(region)
+await Promise.all(promises);
