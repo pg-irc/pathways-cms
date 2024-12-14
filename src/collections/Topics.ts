@@ -26,13 +26,13 @@ export const Topics: CollectionConfig = {
         {
             name: 'localizedName',
             type: 'text',
-            required: true,
+            required: false,
             localized: true,
         },
         {
             name: 'content',
             type: 'richText',
-            required: true,
+            required: false,
             localized: true,
         },
         {
@@ -58,7 +58,7 @@ export const Topics: CollectionConfig = {
             name: 'topictype',
             type: 'relationship',
             relationTo: 'topictype',
-            required: true,
+            required: false,
             hasMany: false,
         },
         {

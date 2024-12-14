@@ -91,8 +91,8 @@ export interface User {
 export interface Topic {
   id: string;
   canonicalName: string;
-  localizedName: string;
-  content: {
+  localizedName?: string | null;
+  content?: {
     root: {
       type: string;
       children: {
@@ -106,11 +106,11 @@ export interface Topic {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
   heroimage?: (string | null) | Media;
   listImage?: (string | null) | Media;
   chapters?: (string | Chapter)[] | null;
-  topictype: string | Topictype;
+  topictype?: (string | null) | Topictype;
   regions?: (string | Region)[] | null;
   updatedAt: string;
   createdAt: string;
