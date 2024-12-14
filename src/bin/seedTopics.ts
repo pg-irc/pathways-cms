@@ -32,24 +32,7 @@ const MARKDOWN_NODES = [
     HorizontalRuleNode
 ];
 
-const editor = createHeadlessEditor({
-    nodes: MARKDOWN_NODES,
-    onError: (error) => console.error(error),
-});
-
-const markdownString = 'one\n\ntwo\n\nthree\nfour\n\n## Heading\n\n- list item 1\n- list item 2\n\n> quote\n\n---\n\n[link](https://example.com)';
-
-editor.update(() => {
-    $convertFromMarkdownString(markdownString, TRANSFORMERS);
-}, {discrete: true});
-
-
-// this gives the correct result
-const lexicalJSON = editor.getEditorState().toJSON();
-console.log('Editor state outside', JSON.stringify(lexicalJSON));
-
-
-const markdownToLexical = (markdownString: string): string => {
+const convertMarkdownToLexical = (markdownString: string): string => {
     const editor = createHeadlessEditor({
         nodes: MARKDOWN_NODES,
         onError: (error) => console.error(error),
@@ -60,8 +43,6 @@ const markdownToLexical = (markdownString: string): string => {
     }, {discrete: true});
     
     const result = editor.getEditorState().toJSON();
-    console.log('XXXXX Editor state', JSON.stringify(result));
-
     return JSON.stringify(result);
 };
 
@@ -77,47 +58,6 @@ const ALL_LOCALES = {
     zh_TW: '',
     uk: '',
 }
-/*
-await payload.create({
-    collection: 'topic',
-    data: {
-        canonicalName: 'topic_id_3',
-        localizedName: 'aa',
-        content: 'bb',
-        chapters: ['6758aeb570f85c9507213c6d'],
-        topictype: '6758af1270f85c9507213da0',
-    },
-    locale: 'fr',
-    fallbackLocale: 'en',
-});
-
-await payload.update({
-    collection: 'topic',
-    id: '675dab8da1908e1cf07accc0',
-    data: {
-        //canonicalName: 'topic_id_2',
-        localizedName: 'name in Ukrainian',
-        content: 'content in Ukrainian',
-        //chapters: ['6758aeb570f85c9507213c6d'],
-        //topictype: '6758af1270f85c9507213da0',
-    },
-    locale: 'uk',
-    //fallbackLocale: 'en',
-});
-*/
-const theTopic = {
-    canonicalName: 'topic_id_10',
-    localizedName: {
-        en: 'name in English',
-        uk: 'name in Ukrainian'
-    },
-    content: {
-        en: markdownToLexical('## heading\ncontent in English'),
-        uk: markdownToLexical('## heading\ncontent in Ukrainian'),
-    }, 
-    chapters: ['6758aeb570f85c9507213c6d'],
-    topictype: '6758af1270f85c9507213da0',
-};
 
 const saveTopic = async (topic) => {
     const result = await payload.create({
@@ -148,5 +88,19 @@ const saveTopic = async (topic) => {
         }
     }
 }
+
+const theTopic = {
+    canonicalName: 'topic_id_11',
+    localizedName: {
+        en: 'name in English',
+        uk: 'name in Ukrainian'
+    },
+    content: {
+        en: convertMarkdownToLexical('## heading\ncontent in English'),
+        uk: convertMarkdownToLexical('## heading\ncontent in Ukrainian'),
+    }, 
+    chapters: ['6758aeb570f85c9507213c6d'],
+    topictype: '6758af1270f85c9507213da0',
+};
 
 saveTopic(theTopic);
