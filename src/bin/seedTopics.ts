@@ -82,14 +82,18 @@ await payload.create({
     collection: 'topic',
     data: {
         canonicalName: 'topic_id',
-        localizedName: { ...ALL_LOCALES, en: 'Test in English', fr: 'Test in French' },
-        //localizedName: { English: 'Test in English', French: 'Test in French', },
-        //localizedName: 'Test in English',
-        //content: { en: 'content in English', fr: 'content in French', },
-        //content: 'content in English',
-        content: { ...ALL_LOCALES, en: '', fr: '' },
-        chapters: ['Education'],
-        topictype: 'test',
+        localizedName: {
+            ...ALL_LOCALES,
+            en: 'Test in English',
+            fr: 'Test in French'
+        },
+        content: {
+            ...ALL_LOCALES,
+            en: 'aa',
+            fr: 'bb'
+        },
+        chapters: ['6758aeb570f85c9507213c6d'],
+        topictype: '6758af1270f85c9507213da0',
     },
     locale: 'en',
     fallbackLocale: 'en',
