@@ -81,7 +81,7 @@ console.log(JSON.stringify({
 await payload.create({
     collection: 'topic',
     data: {
-        canonicalName: 'topic_id_2',
+        canonicalName: 'topic_id_3',
         localizedName: 'aa',
         content: 'bb',
         chapters: ['6758aeb570f85c9507213c6d'],
@@ -89,4 +89,18 @@ await payload.create({
     },
     locale: 'fr',
     fallbackLocale: 'en',
+});
+
+await payload.update({
+    collection: 'topic',
+    id: '675dab8da1908e1cf07accc0',
+    data: {
+        //canonicalName: 'topic_id_2',
+        localizedName: 'name in Ukrainian',
+        content: 'content in Ukrainian',
+        //chapters: ['6758aeb570f85c9507213c6d'],
+        //topictype: '6758af1270f85c9507213da0',
+    },
+    locale: 'uk',
+    //fallbackLocale: 'en',
 });
