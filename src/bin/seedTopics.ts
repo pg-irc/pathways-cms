@@ -13,28 +13,26 @@ import { $getRoot, LineBreakNode, ParagraphNode, RootNode, TextNode } from 'lexi
 
 const payload = await getPayload({ config })
 
-const MARKDOWN_NODES = [
-    HeadingNode,
-    ListNode,
-    ListItemNode,
-    QuoteNode,
-    LineBreakNode,
-    ParagraphNode, 
-    RootNode,
-    TextNode,
-    // CodeNode,
-    // CodeHighlightNode,
-    // TableNode,
-    // TableCellNode,
-    // TableRowNode,
-    // AutoLinkNode,
-    LinkNode,
-    HorizontalRuleNode
-];
-
 const convertMarkdownToLexical = (markdownString: string): string => {
     const editor = createHeadlessEditor({
-        nodes: MARKDOWN_NODES,
+        nodes: [
+            HeadingNode,
+            ListNode,
+            ListItemNode,
+            QuoteNode,
+            LineBreakNode,
+            ParagraphNode,
+            RootNode,
+            TextNode,
+            // CodeNode,
+            // CodeHighlightNode,
+            // TableNode,
+            // TableCellNode,
+            // TableRowNode,
+            // AutoLinkNode,
+            LinkNode,
+            HorizontalRuleNode
+        ],
         onError: (error) => console.error(error),
     });
     
@@ -90,7 +88,7 @@ const saveTopic = async (topic) => {
 }
 
 const theTopic = {
-    canonicalName: 'topic_id_11',
+    canonicalName: 'topic_id_12',
     localizedName: {
         en: 'name in English',
         uk: 'name in Ukrainian'
