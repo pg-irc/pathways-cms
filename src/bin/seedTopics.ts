@@ -81,20 +81,12 @@ console.log(JSON.stringify({
 await payload.create({
     collection: 'topic',
     data: {
-        canonicalName: 'topic_id',
-        localizedName: {
-            ...ALL_LOCALES,
-            en: 'Test in English',
-            fr: 'Test in French'
-        },
-        content: {
-            ...ALL_LOCALES,
-            en: 'aa',
-            fr: 'bb'
-        },
+        canonicalName: 'topic_id_2',
+        localizedName: 'aa',
+        content: 'bb',
         chapters: ['6758aeb570f85c9507213c6d'],
         topictype: '6758af1270f85c9507213da0',
     },
-    locale: 'en',
+    locale: 'fr',
     fallbackLocale: 'en',
 });
