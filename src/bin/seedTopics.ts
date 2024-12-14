@@ -40,20 +40,7 @@ const editor = createHeadlessEditor({
 const markdownString = 'one\n\ntwo\n\nthree\nfour\n\n## Heading\n\n- list item 1\n- list item 2\n\n> quote\n\n---\n\n[link](https://example.com)';
 
 editor.update(() => {
-
     $convertFromMarkdownString(markdownString, TRANSFORMERS);
-
-    const root = $getRoot();
-    console.log('Root node children:', root.getChildren());
-
-    root.getChildren().forEach((node, index) => {
-        // the content is there, but it is not included when converting to JSON
-        console.log(`Node ${index}:`, node.getType(), node.getTextContent());
-    });
-
-    // this gives the wrong result
-    const lexicalJSON = editor.getEditorState().toJSON();
-    console.log('Editor state', JSON.stringify(lexicalJSON));
 }, {discrete: true});
 
 
@@ -70,10 +57,10 @@ const markdownToLexical = (markdownString: string): string => {
     
     editor.update(() => {
         $convertFromMarkdownString(markdownString, TRANSFORMERS);
-    });
+    }, {discrete: true});
     
     const result = editor.getEditorState().toJSON();
-    console.log('Editor state', JSON.stringify(result));
+    console.log('XXXXX Editor state', JSON.stringify(result));
 
     return JSON.stringify(result);
 };
@@ -119,7 +106,7 @@ await payload.update({
 });
 */
 const theTopic = {
-    canonicalName: 'topic_id_9',
+    canonicalName: 'topic_id_10',
     localizedName: {
         en: 'name in English',
         uk: 'name in Ukrainian'
