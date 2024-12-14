@@ -73,11 +73,7 @@ const ALL_LOCALES = {
     zh_TW: '',
     uk: '',
 }
-
-console.log(JSON.stringify({
-    ...ALL_LOCALES, en: 'Test in English', fr: 'Test in French'
-}));
-
+/*
 await payload.create({
     collection: 'topic',
     data: {
@@ -104,3 +100,50 @@ await payload.update({
     locale: 'uk',
     //fallbackLocale: 'en',
 });
+*/
+const theTopic = {
+    canonicalName: 'topic_id_5',
+    localizedName: {
+        en: 'name in English',
+        uk: 'name in Ukrainian'
+    },
+    content: {
+        en: 'content in English',
+        uk: 'content in Ukrainian'
+    }, 
+    chapters: ['6758aeb570f85c9507213c6d'],
+    topictype: '6758af1270f85c9507213da0',
+};
+
+const saveTopic = async (topic) => {
+    const result = await payload.create({
+        collection: 'topic',
+        data: {
+            canonicalName: topic.canonicalName,
+            localizedName: topic.localizedName['en'],
+            content: topic.content['en'],
+            chapters: topic.chapters,
+            topictype: topic.topictype,
+        },
+        locale: 'en',
+        fallbackLocale: 'en',
+    });
+    const id = result.id;
+    const locales = ['uk', 'fr'];
+    for (const locale of locales) {
+        if (topic.localizedName[locale] || topic.content[locale]) {
+            await payload.update({
+                collection: 'topic',
+                id: id,
+                data: {
+                    localizedName: topic.localizedName[locale],
+                    content: topic.content[locale],
+                },
+                locale: locale,
+                fallbackLocale: 'en',
+            });
+        }
+    }
+}
+
+saveTopic(theTopic);
