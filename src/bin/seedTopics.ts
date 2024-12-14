@@ -61,6 +61,23 @@ editor.update(() => {
 const lexicalJSON = editor.getEditorState().toJSON();
 console.log('Editor state outside', JSON.stringify(lexicalJSON));
 
+
+const markdownToLexical = (markdownString: string): string => {
+    const editor = createHeadlessEditor({
+        nodes: MARKDOWN_NODES,
+        onError: (error) => console.error(error),
+    });
+    
+    editor.update(() => {
+        $convertFromMarkdownString(markdownString, TRANSFORMERS);
+    });
+    
+    const result = editor.getEditorState().toJSON();
+    console.log('Editor state', JSON.stringify(result));
+
+    return JSON.stringify(result);
+};
+
 const ALL_LOCALES = {
     en: '',
     ar: '',
@@ -102,14 +119,14 @@ await payload.update({
 });
 */
 const theTopic = {
-    canonicalName: 'topic_id_5',
+    canonicalName: 'topic_id_9',
     localizedName: {
         en: 'name in English',
         uk: 'name in Ukrainian'
     },
     content: {
-        en: 'content in English',
-        uk: 'content in Ukrainian'
+        en: markdownToLexical('## heading\ncontent in English'),
+        uk: markdownToLexical('## heading\ncontent in Ukrainian'),
     }, 
     chapters: ['6758aeb570f85c9507213c6d'],
     topictype: '6758af1270f85c9507213da0',
@@ -128,13 +145,12 @@ const saveTopic = async (topic) => {
         locale: 'en',
         fallbackLocale: 'en',
     });
-    const id = result.id;
     const locales = ['uk', 'fr'];
     for (const locale of locales) {
-        if (topic.localizedName[locale] || topic.content[locale]) {
+        if (locale !== 'en' && topic.localizedName[locale] && topic.content[locale]) {
             await payload.update({
                 collection: 'topic',
-                id: id,
+                id: result.id,
                 data: {
                     localizedName: topic.localizedName[locale],
                     content: topic.content[locale],
