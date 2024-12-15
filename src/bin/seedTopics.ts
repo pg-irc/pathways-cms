@@ -2,6 +2,8 @@
 
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import fs from 'fs';
+import readline from 'readline';
 import 'dotenv/config'
 import { $convertFromMarkdownString, TRANSFORMERS } from '@lexical/markdown';
 import { LinkNode } from '@payloadcms/richtext-lexical';
@@ -9,7 +11,7 @@ import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headl
 import { ListItemNode, ListNode } from '@payloadcms/richtext-lexical/lexical/list';
 import { HorizontalRuleNode } from '@payloadcms/richtext-lexical/lexical/react/LexicalHorizontalRuleNode';
 import { HeadingNode, QuoteNode } from '@payloadcms/richtext-lexical/lexical/rich-text';
-import { $getRoot, LineBreakNode, ParagraphNode, RootNode, TextNode } from 'lexical';
+import { LineBreakNode, ParagraphNode, RootNode, TextNode } from 'lexical';
 
 const payload = await getPayload({ config })
 
@@ -101,4 +103,99 @@ const theTopic = {
     topictype: '6758af1270f85c9507213da0',
 };
 
-saveTopic(theTopic);
+// saveTopic(theTopic);
+
+
+async function processFileLineByLine(filePath: string): Promise<void> {
+    const fileStream = fs.createReadStream(filePath);
+    const rl = readline.createInterface({
+        input: fileStream,
+        crlfDelay: Infinity
+    });
+
+    const getValue = (line: string) => line.split('//')[1];
+
+    for await (const line of rl) {
+        if (line.startsWith('CHAPTER//')) {
+            completeTopic();
+            chapter = getValue(line);
+        } else if (line.startsWith('TOPIC//')) {
+            completeTopic();
+            localizedName = getValue(line);
+        } else if (line.startsWith('ID//')) {
+            completeTopic();
+            canonicalName = getValue(line);
+        } else if (line.startsWith('MAPS_QUERY//') || line.startsWith('Tags')) {
+            completeTopic();
+        } else {
+            localizedContent += line + '\n';
+        }
+
+        console.log('Finished reading the file.');
+    }
+}
+
+let chapter = '';
+let localizedName = '';
+let canonicalName = '';
+let localizedContent = '';
+
+const getChapter = async (name: string): string => {
+    const r1 = await payload.find({
+        collection: 'chapter',
+        where: { name },
+    });
+    if (r1.length > 0) { return r1[0].id; }
+    const r2 = await payload.create({
+        collection: 'chapter',
+        data: { name },
+    });
+    return r2.id;
+};
+
+const getTopic = async (topic) => {
+    const r1 = await payload.find({
+        collection: 'topic',
+        where: { canonicalName: topic.canonicalName },
+    });
+    if (r1.length > 0) { return r1[0].id; }
+    const r2 = await payload.create({
+        collection: 'topic',
+        data: {
+            canonicalName: topic.canonicalName,
+            localizedName: topic.localizedName['en'],
+            content: topic.content['en'],
+            chapters: topic.chapters[0],
+            topictype: topic.topictype,
+        },
+        locale: 'en',
+        fallbackLocale: 'en',
+    });
+    return r2.id;
+};
+
+const completeTopic = async () => {
+    const chapterId = await getChapter(chapter);
+    const topicId = await getTopic({
+        canonicalName,
+        localizedName,
+        content: convertMarkdownToLexical(localizedContent),
+        chapters: [chapterId],
+        topictype: '6758af1270f85c9507213da0',
+    // create topic if it doesn't exist
+    // update topic if it does exist
+
+    saveTopic({
+        canonicalName,
+        localizedName: ALL_LOCALES,
+        content: ALL_LOCALES,
+        chapters: [chapter],
+        topictype: '6758af1270f85c9507213da0',
+    });
+    localizedName = '';
+    canonicalName = '';
+    localizedContent = '';
+};
+
+await processFileLineByLine('../content/topics/bc/markdown/Newcomers-Guide-English.md')
+    .catch(err => console.error('Error processing file:', err));
