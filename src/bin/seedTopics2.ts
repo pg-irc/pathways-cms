@@ -20,7 +20,37 @@ async function processFileLineByLine(filePath: string): Promise<void> {
 }
 
 const processLine = (line: string) => {
-    console.log('Line ', line)
+    if (line.startsWith('CHAPTER//')) {
+        completeTopic();
+        chapter = getValue(line);
+    } else if (line.startsWith('TOPIC//')) {
+        completeTopic();
+        localizedName = getValue(line);
+    } else if (line.startsWith('ID//')) {
+        completeTopic();
+        canonicalName = getValue(line);
+    } else if (line.startsWith('MAPS_QUERY//') || line.startsWith('Tags')) {
+        // do nothing
+    } else {
+        localizedContent += line + '\n';
+    }
+};
+
+const getValue = (line: string) => line.split('//')[1];
+
+let chapter = '';
+let localizedName = '';
+let canonicalName = '';
+let localizedContent = '';
+
+const completeTopic = () => {
+    if (!localizedContent) {
+        return;
+    }
+    console.log('Chapter:', chapter);
+    console.log('LocalizedName:', localizedName);
+    console.log('CanonicalName:', canonicalName);
+    localizedContent = '';
 };
 
 main();
