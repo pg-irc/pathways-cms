@@ -22,7 +22,7 @@ const main =  async () => {
         .catch(err => console.error('Error processing file:', err));
 };
 
-const processFile = async (filePath: string) => {
+const oldProcessFile = async (filePath: string) => {
     console.log('Processing file: ', filePath);
 
     const theFileStream = fs.createReadStream(filePath);
@@ -35,18 +35,43 @@ const processFile = async (filePath: string) => {
     }
 }
 
-const processLine = (line: string) => {
+const processFile = (filePath: string) => {
+    const fileDescriptor = fs.openSync(filePath, 'r');
+    const bufferSize = 4 * 1024;
+    const buffer = Buffer.alloc(bufferSize);
+    let leftover = '';
+    let bytesRead = 0;
+    
+    do {
+        bytesRead = fs.readSync(fileDescriptor, buffer, 0, bufferSize, null);
+        const chunk = buffer.toString('utf8', 0, bytesRead);
+        const lines = (leftover + chunk).split('\n');
+        
+        for (let i = 0; i < lines.length - 1; i++) {
+            processLine(lines[i]);
+        }
+        leftover = lines[lines.length - 1];
+    } while (bytesRead === bufferSize);
+
+    if (leftover) {
+        processLine(leftover);
+    }
+    fs.closeSync(fileDescriptor);
+    console.log('Finished reading the file.');
+};
+
+const processLine = async (line: string) => {
     console.log('LINE: ', line);
     if (line.startsWith('CHAPTER//')) {
-        persistCurrentTopic();
+        await persistCurrentTopic();
         chapter = getValueFromLine(line);
 
     } else if (line.startsWith('TOPIC//')) {
-        persistCurrentTopic();
+        await persistCurrentTopic();
         localizedName = getValueFromLine(line);
 
     } else if (line.startsWith('ID//')) {
-        persistCurrentTopic();
+        await persistCurrentTopic();
         canonicalName = getValueFromLine(line);
 
     } else if (line.startsWith('MAPS_QUERY//') || line.startsWith('Tags')) {
