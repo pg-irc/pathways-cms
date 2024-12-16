@@ -20,8 +20,6 @@ const main =  async () => {
     processFileSync(filename);
 };
 
-// console.log('test', 'CHAPTER//foo//\nbar'.startsWith('CHAPTER//'));
-
 const processFileSync = (filePath: string) => {
     const fileDescriptor = fs.openSync(filePath, 'r');
     const bufferSize = 4 * 1024;
@@ -87,7 +85,7 @@ const processLine = async (line: string) => {
 
 const getValueFromLine = (line: string) => {
     const res = line.split('//')[1];
-    console.log('Getting value "' + res + '" from line: "' + line + '"');
+    // console.log('Getting value "' + res + '" from line: "' + line + '"');
     return res;
 }
 
@@ -116,6 +114,7 @@ const persistCurrentTopic = async (theState: State) => {
     return getTopicId(theState).
         then((topicId) => { return setLocalizedContent(topicId, theState); }).
         then(() => {
+            console.log('clearing localizedContent');
             state = { ...state, localizedContent: '' }
         });
 };
@@ -140,7 +139,10 @@ const getTopicId = async (state: State) => {
                             },
                             locale,
                             fallbackLocale: locale,
-                        }).then(result => result.id);
+                        }).then(result => {
+                            console.log('DB Created topic ', result.id);
+                            return result.id;
+                        });
                     });
         });
 };
@@ -153,12 +155,15 @@ const getChapterId = async (state: State): Promise<string> => {
             return result.docs.length > 0
                 ? result.docs[0].id
                 : payload.create({ collection: 'chapter', data: { name: state.chapter } }).
-                    then(result => result.id);
+                    then(result => {
+                        console.log('DB Created chapter ', result.id);
+                        return result.id;
+                    });
         });
 };
 
 const setLocalizedContent = async (topicId: string, state: State): Promise<any> => {
-    console.log('Setting localized content for ', state.canonicalName, ' in locale ', locale);
+    console.log('Setting localized content for ', state.canonicalName, '( topic ', topicId, ') in locale ', locale);
 
     return payload.update({
         collection: 'topic',
