@@ -1,7 +1,7 @@
 import fs from 'fs';
 import readline from 'readline';
 import 'dotenv/config'
-import { getPayload } from 'payload'
+import { BulkOperationResult, getPayload } from 'payload'
 import config from '@payload-config'
 import { createHeadlessEditor } from '@payloadcms/richtext-lexical/lexical/headless';
 import { $convertFromMarkdownString, TRANSFORMERS } from '@lexical/markdown';
@@ -11,8 +11,8 @@ import { HorizontalRuleNode } from '@payloadcms/richtext-lexical/lexical/react/L
 import { HeadingNode, QuoteNode } from '@payloadcms/richtext-lexical/lexical/rich-text';
 import { LineBreakNode, ParagraphNode, RootNode, TextNode } from 'lexical';
 
-
-const filename = '../content/topics/bc/markdown/Newcomers-Guide-English.md';
+// const filename = '../content/topics/bc/markdown/Newcomers-Guide-English.md';
+const filename = './markdown-4-items.md';
 const locale = 'en';
 const region = 'bc';
 
@@ -23,6 +23,8 @@ const main =  async () => {
 };
 
 const processFile = async (filePath: string) => {
+    console.log('Processing file: ', filePath);
+
     const theFileStream = fs.createReadStream(filePath);
     const theLineReader = readline.createInterface({
         input: theFileStream,
@@ -63,62 +65,55 @@ let localizedContent = '';
 let count = 0;
 
 const persistCurrentTopic = async () => {
-    if (!localizedContent) {
-        return;
-    }
-    console.log('Persisting ', canonicalName);
-    count++;
-    if (count > 4) {
-        console.log('Skipping ', canonicalName);
-        return;
-    }
-    const topicId = await getTopicId();
-    await setLocalizedContent(topicId);
-    localizedContent = '';
+    if (!localizedContent) { return; }
+    
+    console.log('Persisting topic: ', canonicalName);
+    
+    return getTopicId().
+        then((topicId) => { return setLocalizedContent(topicId); }).
+        then(() => { localizedContent = ''; });
 };
 
 const payload = await getPayload({ config })
 
 const getTopicId = async () => {
-    const r1 = await payload.find({ collection: 'topic', where: { canonicalName } });
-    if (r1.length > 0) { return r1[0].id; }
+    console.log('Getting topic id for ', canonicalName);
 
-    console.log('Creating topic ', canonicalName);
-
-    const chapterId = await getChapterId(chapter);
-    const topicTypeId = '675f35950a85d2e36a578ef2';
-    const r2 = await payload.create({
-        collection: 'topic',
-        data: {
-            canonicalName,
-            chapters: [chapterId],
-            topictype: topicTypeId,
-        },
-        locale,
-        fallbackLocale: locale,
-    });
-    return r2.id;
+    return payload.find({ collection: 'topic', where: { canonicalName } }).
+        then(found => {
+            return found.docs.length > 0
+                ? found.docs[0].id
+                : getChapterId(chapter).
+                    then(chapterId => {
+                        return payload.create({
+                            collection: 'topic',
+                            data: {
+                                canonicalName,
+                                chapters: [chapterId],
+                                topictype: '675f35950a85d2e36a578ef2',
+                            },
+                            locale,
+                            fallbackLocale: locale,
+                        }).id;
+                    });
+        });
 };
 
 const getChapterId = async (name: string): Promise<string> => {
-    const r1 = await payload.find({ collection: 'chapter', where: { name } });
-    if (r1.length > 0) {
-        console.log('Found chapter ', JSON.stringify(r1));
-        return r1[0].id;
-    }
+    console.log('Getting chapter id for ', name);
 
-    console.log('Creating chapter ', name);
-
-    const r2 = await payload.create({ collection: 'chapter', data: { name } });
-    console.log('Created chapter ', JSON.stringify(r2));
-    return r2.id;
+    return payload.find({ collection: 'chapter', where: { name } }).
+        then(r1 => {
+            return r1.length > 0
+                ? r1[0].id
+                : payload.create({ collection: 'chapter', data: { name } }).id;
+        });
 };
 
-const setLocalizedContent = async (topicId: string) => {
+const setLocalizedContent = async (topicId: string): Promise<any> => {
+    console.log('Setting localized content for ', canonicalName, ' in locale ', locale);
 
-    console.log('Setting localized content for ', canonicalName);
-
-    await payload.update({
+    return payload.update({
         collection: 'topic',
         id: topicId,
         where: { canonicalName },
