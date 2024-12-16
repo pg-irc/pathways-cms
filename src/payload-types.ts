@@ -90,8 +90,9 @@ export interface User {
  */
 export interface Topic {
   id: string;
-  name: string;
-  content: {
+  canonicalName: string;
+  localizedName?: string | null;
+  content?: {
     root: {
       type: string;
       children: {
@@ -105,11 +106,11 @@ export interface Topic {
       version: number;
     };
     [k: string]: unknown;
-  };
+  } | null;
   heroimage?: (string | null) | Media;
   listImage?: (string | null) | Media;
   chapters?: (string | Chapter)[] | null;
-  topictype: string | Topictype;
+  topictype?: (string | null) | Topictype;
   regions?: (string | Region)[] | null;
   updatedAt: string;
   createdAt: string;
@@ -276,7 +277,8 @@ export interface UsersSelect<T extends boolean = true> {
  * via the `definition` "topic_select".
  */
 export interface TopicSelect<T extends boolean = true> {
-  name?: T;
+  canonicalName?: T;
+  localizedName?: T;
   content?: T;
   heroimage?: T;
   listImage?: T;
