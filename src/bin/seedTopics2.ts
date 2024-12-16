@@ -16,25 +16,10 @@ const filename = './markdown-4-items.md';
 const locale = 'en';
 const region = 'bc';
 
-
 const main =  async () => {
     processFileSync(filename);
 };
 
-/*
-const oldProcessFile = async (filePath: string) => {
-    console.log('Processing file: ', filePath);
-
-    const theFileStream = fs.createReadStream(filePath);
-    const theLineReader = readline.createInterface({
-        input: theFileStream,
-        crlfDelay: Infinity
-    });
-    for await (const line of theLineReader) {
-        processLine(line);
-    }
-}
-*/
 const processFileSync = (filePath: string) => {
     const fileDescriptor = fs.openSync(filePath, 'r');
     const bufferSize = 4 * 1024;
@@ -64,18 +49,21 @@ const processFileSync = (filePath: string) => {
 };
 
 const processLine = async (line: string) => {
-    console.log('LINE: ', line);
+    console.log('LINE: "' + line + '"');
     if (line.startsWith('CHAPTER//')) {
         await persistCurrentTopic(state);
         state = { ...state, chapter: getValueFromLine(line) };
+        console.log('XXX chapter line: ', JSON.stringify(state));
 
     } else if (line.startsWith('TOPIC//')) {
         await persistCurrentTopic(state);
         state = { ...state, localizedName: getValueFromLine(line) };
+        console.log('YYY topic line: ', JSON.stringify(state));
 
     } else if (line.startsWith('ID//')) {
         await persistCurrentTopic(state);
         state = { ...state, canonicalName: getValueFromLine(line) };
+        console.log('ZZZ id line: ', JSON.stringify(state));
 
     } else if (line.startsWith('MAPS_QUERY//') || line.startsWith('Tags')) {
         // do nothing
@@ -103,7 +91,7 @@ let state: State = {
 const persistCurrentTopic = async (theState: State) => {
     if (theState.localizedContent.trim() === '') { return; }
     
-    console.log('Persisting topic: "', theState.canonicalName, '"');
+    console.log('Persisting topic with canonical nane "', theState.canonicalName, '"');
     
     return getTopicId(theState).
         then((topicId) => { return setLocalizedContent(topicId, theState); }).
