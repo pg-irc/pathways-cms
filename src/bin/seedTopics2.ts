@@ -18,10 +18,10 @@ const region = 'bc';
 
 
 const main =  async () => {
-    await processFile(filename)
-        .catch(err => console.error('Error processing file:', err));
+    processFileSync(filename);
 };
 
+/*
 const oldProcessFile = async (filePath: string) => {
     console.log('Processing file: ', filePath);
 
@@ -34,8 +34,8 @@ const oldProcessFile = async (filePath: string) => {
         processLine(line);
     }
 }
-
-const processFile = (filePath: string) => {
+*/
+const processFileSync = (filePath: string) => {
     const fileDescriptor = fs.openSync(filePath, 'r');
     const bufferSize = 4 * 1024;
     const buffer = Buffer.alloc(bufferSize);
@@ -44,6 +44,9 @@ const processFile = (filePath: string) => {
     
     do {
         bytesRead = fs.readSync(fileDescriptor, buffer, 0, bufferSize, null);
+        
+        console.log('Bytes read: ', bytesRead);
+        
         const chunk = buffer.toString('utf8', 0, bytesRead);
         const lines = (leftover + chunk).split('\n');
         
@@ -63,88 +66,98 @@ const processFile = (filePath: string) => {
 const processLine = async (line: string) => {
     console.log('LINE: ', line);
     if (line.startsWith('CHAPTER//')) {
-        await persistCurrentTopic();
-        chapter = getValueFromLine(line);
+        await persistCurrentTopic(state);
+        state = { ...state, chapter: getValueFromLine(line) };
 
     } else if (line.startsWith('TOPIC//')) {
-        await persistCurrentTopic();
-        localizedName = getValueFromLine(line);
+        await persistCurrentTopic(state);
+        state = { ...state, localizedName: getValueFromLine(line) };
 
     } else if (line.startsWith('ID//')) {
-        await persistCurrentTopic();
-        canonicalName = getValueFromLine(line);
+        await persistCurrentTopic(state);
+        state = { ...state, canonicalName: getValueFromLine(line) };
 
     } else if (line.startsWith('MAPS_QUERY//') || line.startsWith('Tags')) {
         // do nothing
     } else {
-        localizedContent += line + '\n';
+        state = { ...state, localizedContent: state.localizedContent + line + '\n' };
     }
 };
 
 const getValueFromLine = (line: string) => line.split('//')[1];
 
-let chapter = '';
-let localizedName = '';
-let canonicalName = '';
-let localizedContent = '';
-let count = 0;
+interface State {
+    chapter: string;
+    localizedName: string;
+    canonicalName: string;
+    localizedContent: string;
+};
 
-const persistCurrentTopic = async () => {
-    if (!localizedContent) { return; }
+let state: State = {
+    chapter: '',
+    localizedName: '',
+    canonicalName: '',
+    localizedContent: ''
+};
+
+const persistCurrentTopic = async (theState: State) => {
+    if (theState.localizedContent.trim() === '') { return; }
     
-    console.log('Persisting topic: ', canonicalName);
+    console.log('Persisting topic: "', theState.canonicalName, '"');
     
-    return getTopicId().
-        then((topicId) => { return setLocalizedContent(topicId); }).
-        then(() => { localizedContent = ''; });
+    return getTopicId(theState).
+        then((topicId) => { return setLocalizedContent(topicId, theState); }).
+        then(() => {
+            state = { ...state, localizedContent: '' }
+        });
 };
 
 const payload = await getPayload({ config })
 
-const getTopicId = async () => {
-    console.log('Getting topic id for ', canonicalName);
+const getTopicId = async (state: State) => {
+    console.log('Getting topic id for ', state.canonicalName);
 
-    return payload.find({ collection: 'topic', where: { canonicalName } }).
+    return payload.find({ collection: 'topic', where: { canonicalName: state.canonicalName } }).
         then(found => {
             return found.docs.length > 0
                 ? found.docs[0].id
-                : getChapterId(chapter).
+                : getChapterId(state).
                     then(chapterId => {
                         return payload.create({
                             collection: 'topic',
                             data: {
-                                canonicalName,
+                                canonicalName: state.canonicalName,
                                 chapters: [chapterId],
                                 topictype: '675f35950a85d2e36a578ef2',
                             },
                             locale,
                             fallbackLocale: locale,
-                        }).id;
+                        }).then(result => result.id);
                     });
         });
 };
 
-const getChapterId = async (name: string): Promise<string> => {
-    console.log('Getting chapter id for ', name);
+const getChapterId = async (state: State): Promise<string> => {
+    console.log('Getting chapter id for ', state.chapter);
 
-    return payload.find({ collection: 'chapter', where: { name } }).
-        then(r1 => {
-            return r1.length > 0
-                ? r1[0].id
-                : payload.create({ collection: 'chapter', data: { name } }).id;
+    return payload.find({ collection: 'chapter', where: { name: state.chapter } }).
+        then(result => {
+            return result.docs.length > 0
+                ? result.docs[0].id
+                : payload.create({ collection: 'chapter', data: { name: state.chapter } }).
+                    then(result => result.id);
         });
 };
 
-const setLocalizedContent = async (topicId: string): Promise<any> => {
-    console.log('Setting localized content for ', canonicalName, ' in locale ', locale);
+const setLocalizedContent = async (topicId: string, state: State): Promise<any> => {
+    console.log('Setting localized content for ', state.canonicalName, ' in locale ', locale);
 
     return payload.update({
         collection: 'topic',
         id: topicId,
-        where: { canonicalName },
         data: {
-            localizedName: localizedName,
-            content: convertMarkdownToLexical(localizedContent),
+            localizedName: state.localizedName,
+            content: convertMarkdownToLexical(state.localizedContent),
         },
         locale,
         fallbackLocale: 'en',
