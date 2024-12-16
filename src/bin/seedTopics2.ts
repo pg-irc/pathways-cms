@@ -20,6 +20,8 @@ const main =  async () => {
     processFileSync(filename);
 };
 
+// console.log('test', 'CHAPTER//foo//\nbar'.startsWith('CHAPTER//'));
+
 const processFileSync = (filePath: string) => {
     const fileDescriptor = fs.openSync(filePath, 'r');
     const bufferSize = 4 * 1024;
@@ -48,22 +50,33 @@ const processFileSync = (filePath: string) => {
     console.log('Finished reading the file.');
 };
 
+const logState = (s: string) => {
+    const isEmpty = state.localizedContent.trim() === '';
+    console.log('STATE ' + s + ': "' + JSON.stringify({ ...state, isEmpty }).slice(0, 250) + '"');
+}
+
 const processLine = async (line: string) => {
     console.log('LINE: "' + line + '"');
     if (line.startsWith('CHAPTER//')) {
-        await persistCurrentTopic(state);
-        state = { ...state, chapter: getValueFromLine(line) };
-        console.log('XXX chapter line: ', JSON.stringify(state));
-
+        const chapter = getValueFromLine(line);
+        const oldChapter = state.chapter;
+        state = { ...state, chapter };
+        logState('AAAA chapter');
+        await persistCurrentTopic({ ...state, chapter: oldChapter });
+    
     } else if (line.startsWith('TOPIC//')) {
-        await persistCurrentTopic(state);
-        state = { ...state, localizedName: getValueFromLine(line) };
-        console.log('YYY topic line: ', JSON.stringify(state));
+        const localizedName = getValueFromLine(line);
+        const oldLocalizedName = state.localizedName;
+        state = { ...state, localizedName };
+        logState('BBBB localizedName');
+        await persistCurrentTopic({ ...state, localizedName: oldLocalizedName });
 
     } else if (line.startsWith('ID//')) {
-        await persistCurrentTopic(state);
-        state = { ...state, canonicalName: getValueFromLine(line) };
-        console.log('ZZZ id line: ', JSON.stringify(state));
+        const canonicalName = getValueFromLine(line);
+        const oldCanonicalName = state.canonicalName;
+        state = { ...state, canonicalName };
+        logState('CCCC canonicalName');
+        await persistCurrentTopic({ ...state, canonicalName: oldCanonicalName });
 
     } else if (line.startsWith('MAPS_QUERY//') || line.startsWith('Tags')) {
         // do nothing
@@ -72,7 +85,11 @@ const processLine = async (line: string) => {
     }
 };
 
-const getValueFromLine = (line: string) => line.split('//')[1];
+const getValueFromLine = (line: string) => {
+    const res = line.split('//')[1];
+    console.log('Getting value "' + res + '" from line: "' + line + '"');
+    return res;
+}
 
 interface State {
     chapter: string;
@@ -89,9 +106,12 @@ let state: State = {
 };
 
 const persistCurrentTopic = async (theState: State) => {
-    if (theState.localizedContent.trim() === '') { return; }
+    if (theState.localizedContent.trim() === '') {
+        console.log('Skipping empty topic');
+        return;
+    }
     
-    console.log('Persisting topic with canonical nane "', theState.canonicalName, '"');
+    console.log('Persisting topic "' + JSON.stringify(theState).slice(0, 250) + '"');
     
     return getTopicId(theState).
         then((topicId) => { return setLocalizedContent(topicId, theState); }).
